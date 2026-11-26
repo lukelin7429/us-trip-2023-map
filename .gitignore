@@ -1,0 +1,18 @@
+# Private: photo metadata (times, GPS, faces) and raw stop coordinates, which include places I stayed
+photos.json
+query.err
+thumbs/
+thumbs.json
+sheets/
+coords.json
+routes.json
+routes/
+shots/review_*.jpg
+# Regenerable downloads and build intermediates
+osm/
+/geo.json
+timeline.txt
+.hc/
+.DS_Store
+__pycache__/
+*.log

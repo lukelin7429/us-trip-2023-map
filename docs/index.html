@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Three weeks on the US East Coast, August–September 2023, rebuilt from the time and GPS stamps in phone photos.">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>美東二十一日行</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: interstate guide-sign hero + departure-board stats, then a two-pane stage:
+   the scrolling day-by-day log on the left and a sticky vector map of the US on the right
+   (on phones the map sticks to the top and the log scrolls under it). */
+:root{
+  --paper:#f2f3f0; --panel:#ffffff; --ink:#1b2830; --muted:#5d6b72; --rule:#d5dbdc;
+  --sea:#cfdde1; --land:#ecebe4; --park:#dce6d3; --state:#c9c6b8; --river:#a9c4cc; --road:#d6d1c2;
+  --board:#14202a; --board-ink:#f4b13a; --board-dim:#7d8c96;
+  --sign:#0b6b3a; --sign-ink:#ffffff;
+  --s0:#b8382c; --s1:#2f5da8; --s2:#c2700c; --s3:#13806f; --s4:#7a4fa8;
+  --zh:'PingFang TC','Apple LiGothic Medium','Microsoft JhengHei',sans-serif;
+  --display:'Barlow Condensed','PingFang TC','Microsoft JhengHei',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f171c; --panel:#162229; --ink:#e4eaec; --muted:#97a6ad; --rule:#2a3a43;
+  --sea:#13232c; --land:#1e2c33; --park:#22362c; --state:#33444c; --river:#2c4a57; --road:#34444b;
+  --board:#0a1115; --board-ink:#f6b941; --board-dim:#6b7a83; --sign:#0d5a33;
+  --s0:#ef6a5c; --s1:#7fa4ef; --s2:#eba04a; --s3:#43c1ab; --s4:#b892ea; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f171c; --panel:#162229; --ink:#e4eaec; --muted:#97a6ad; --rule:#2a3a43;
+  --sea:#13232c; --land:#1e2c33; --park:#22362c; --state:#33444c; --river:#2c4a57; --road:#34444b;
+  --board:#0a1115; --board-ink:#f6b941; --board-dim:#6b7a83; --sign:#0d5a33;
+  --s0:#ef6a5c; --s1:#7fa4ef; --s2:#eba04a; --s3:#43c1ab; --s4:#b892ea; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--zh);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;padding-block:40px 28px;align-items:end}
+.kicker{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,8vw,84px);line-height:1;letter-spacing:.01em;margin:10px 0 14px}
+.nw{white-space:nowrap}
+.hero h1 small{display:block;font-size:.36em;font-weight:600;letter-spacing:.12em;color:var(--muted);margin-top:8px}
+.lead{max-width:34em;color:var(--ink);margin:0}
+.lead b{font-weight:600}
+.en{color:var(--muted);font-family:'Barlow',var(--zh);letter-spacing:.005em}
+.lead.en{margin-top:10px;font-size:15.5px}
+.h1en{display:block;font-family:var(--display);font-weight:600;font-size:.3em;letter-spacing:.06em;color:var(--muted);margin-top:6px;text-transform:uppercase}
+.h2en{display:block;font-family:var(--display);font-weight:500;font-size:16px;letter-spacing:.03em;color:var(--muted);margin-top:2px}
+.card p.en{margin-top:4px;font-size:15px;line-height:1.55}
+.lbcap .en{color:#b9c4c8;font-size:14px}
+
+/* interstate guide sign */
+.signwrap{justify-self:end;width:100%;max-width:520px}
+.sign{background:var(--sign);color:var(--sign-ink);border-radius:14px;padding:6px;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.sign-in{border:3px solid var(--sign-ink);border-radius:10px;padding:14px 18px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:center}
+.shield{width:86px;height:auto;grid-row:span 2}
+.dir{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.18em}
+.dests{grid-column:1/-1;display:flex;flex-direction:column;gap:2px;margin-top:6px;border-top:2px solid rgba(255,255,255,.55);padding-top:10px}
+.dests div{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.dests b{font-family:'Barlow',var(--zh);font-weight:500;font-size:28px;letter-spacing:.01em;line-height:1.15}
+.dests span{font-family:var(--zh);font-size:15px;opacity:.85}
+.dests em{font-style:normal;font-family:var(--display);font-weight:600;font-size:24px;opacity:.9}
+.signpost{display:flex;justify-content:center;gap:120px;height:18px}
+.signpost i{width:10px;background:var(--state);display:block}
+.signfoot{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+
+/* departure board stats */
+.board{background:var(--board);border-radius:var(--radius);padding:14px 16px;margin-block:8px 28px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 18px;font-variant-numeric:tabular-nums}
+.board div{display:flex;flex-direction:column;min-width:0}
+.board .lab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--board-dim);text-transform:uppercase}
+.board .val{font-family:var(--display);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.05;color:var(--board-ink);letter-spacing:.02em}
+.board .val small{font-size:.45em;margin-left:4px;letter-spacing:.06em}
+.board .zh{font-size:13px;color:#c9d2d6;opacity:.85}
+
+/* ---------- stage ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:28px;align-items:start}
+.mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);height:calc(100vh - 24px);min-height:420px;display:flex;flex-direction:column;gap:10px}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{border:1px solid var(--rule);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;line-height:1.3;white-space:nowrap}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.play{margin-left:auto;background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+.play svg{width:12px;height:12px}
+.mapbox{position:relative;flex:1;min-height:0;border-radius:var(--radius);overflow:hidden;background:var(--sea);border:1px solid var(--rule)}
+#map{width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#map.dragging{cursor:grabbing}
+.land{fill:var(--land)}.water{fill:var(--sea)}
+.states{fill:none;stroke:var(--state);stroke-width:1}
+.rivers{fill:none;stroke:var(--river);stroke-width:1.2}
+.roads{fill:none;stroke:var(--road);stroke-width:1.6}
+.minor{fill:none;stroke:var(--road);stroke-width:1;opacity:.8}
+.park{fill:var(--park)}
+.runway{fill:none;stroke:var(--road);stroke-width:4}
+.leg{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .35s}
+.leg.car{stroke-width:4}.leg.subway{stroke-width:3.5;stroke-dasharray:7 4}.leg.walk{stroke-width:4;stroke-dasharray:0.1 7}
+.leg.flight{stroke-width:2.2;stroke-dasharray:8 6;opacity:.85}
+.leg.boat{stroke-width:3.5;stroke-dasharray:2 5}
+.leg.move{stroke-width:2.5;stroke-dasharray:6 6;opacity:.7}
+.dim .leg:not(.on),.dim .stop:not(.on){opacity:.14}
+.stop{cursor:pointer;transition:opacity .35s}
+.stop circle.dot{stroke:var(--panel);stroke-width:2}
+.stop .ring{fill:none;stroke-width:2;opacity:0}
+.stop.active .ring{opacity:1;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{stroke-opacity:.9}100%{stroke-opacity:0}}
+.plabel{font-family:var(--zh);fill:var(--muted);paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round;pointer-events:none;transition:opacity .3s}
+.plabel.sea{stroke:var(--sea);font-style:italic;letter-spacing:.2em;opacity:.8}
+.plabel.big{font-weight:600;letter-spacing:.08em}
+.plabel.off{opacity:0}
+.slabel{font-family:var(--zh);font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round;pointer-events:none;opacity:0;transition:opacity .25s}
+.stop.active .slabel,.stop:hover .slabel{opacity:1}
+.mover{pointer-events:none}
+.mapctl{position:absolute;right:calc(10px + env(safe-area-inset-right,0px));bottom:10px;display:flex;flex-direction:column;gap:6px}
+.mapctl button{width:36px;height:36px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.inset{position:absolute;left:10px;top:10px;width:170px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:4px;opacity:.95}
+.inset svg{display:block;width:100%;height:auto}
+.inset .iland{fill:var(--land);stroke:var(--rule);stroke-width:.4}
+.inset .isea{fill:var(--sea)}
+.inset .arc{fill:none;stroke:var(--s0);stroke-width:1.4;stroke-dasharray:4 3}
+.inset .arc.back{stroke:var(--s4)}
+.inset .city{fill:var(--ink)}
+.inset text{font-size:9px;fill:var(--muted);font-family:var(--zh)}
+.inset .frame{fill:none;stroke:var(--ink);stroke-width:.8}
+.caption{position:absolute;left:10px;right:56px;bottom:10px;background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--rule);border-radius:8px;padding:8px 12px;font-size:14px;line-height:1.45;max-width:420px;pointer-events:none}
+.caption .t{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.caption b{font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:26px;height:8px}
+
+/* ---------- log ---------- */
+.log{display:flex;flex-direction:column;gap:0;padding-bottom:30vh}
+.seghead{margin-top:34px;padding:10px 14px;border-radius:8px;background:color-mix(in srgb,var(--c) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--c) 35%,var(--rule));display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.seghead:first-child{margin-top:6px}
+.seghead b{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.04em;color:var(--c)}
+.seghead span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.dayhead{padding-block:22px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline;scroll-margin-top:20px}
+.dayhead .num{font-family:var(--display);font-weight:700;font-size:50px;line-height:.9;color:var(--c);min-width:2.2em}
+.dayhead h2{font-size:21px;font-weight:600;line-height:1.35}
+.dayhead p{grid-column:2;margin:0;color:var(--muted);font-size:14.5px}
+.dayhead .dow{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;display:block;margin-bottom:2px}
+.card{position:relative;padding:14px 0 18px 26px;border-left:3px solid var(--c);margin-left:12px;scroll-margin-top:20px}
+.card::before{content:"";position:absolute;left:-9px;top:20px;width:15px;height:15px;border-radius:50%;background:var(--paper);border:3px solid var(--c)}
+.card.active::before{background:var(--c)}
+.card .t{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card h3{font-size:19px;font-weight:600;line-height:1.35;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.card h3 em{font-style:normal;font-family:var(--display);font-weight:500;font-size:16px;letter-spacing:.04em;color:var(--muted)}
+.card p{margin:6px 0 0;font-size:15.5px;max-width:34em}
+.card .goto{background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.card .goto:hover h3{text-decoration:underline;text-decoration-color:var(--c);text-underline-offset:4px}
+.strip{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.strip button{flex:0 0 auto;border:0;padding:0;background:var(--rule);border-radius:6px;overflow:hidden;cursor:zoom-in;scroll-snap-align:start;height:104px;position:relative}
+.strip img{height:104px;width:auto;display:block;transition:transform .3s}
+.strip button:hover img{transform:scale(1.04)}
+.strip .vid{position:absolute;right:5px;bottom:5px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.55);color:#fff;border-radius:3px;padding:1px 4px}
+.leginfo{margin-left:12px;border-left:3px dotted var(--c);padding:4px 0 10px 26px;font-size:14px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.leginfo .mode{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);border-radius:4px;padding:1px 6px;color:var(--ink)}
+.leginfo .km{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.leginfo.air .mode{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+footer{border-top:1px solid var(--rule);margin-top:40px;padding-block:22px 40px;font-size:13.5px;color:var(--muted);display:grid;gap:6px}
+footer p{margin:0;max-width:60em}
+
+/* lightbox */
+dialog#lb{border:0;padding:0;max-width:100vw;max-height:100vh;width:100vw;height:100vh;background:rgba(8,12,15,.94);color:#eef2f3}
+dialog#lb::backdrop{background:rgba(8,12,15,.94)}
+.lbin{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;padding:calc(env(safe-area-inset-top,0px) + 50px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px))}
+.lbimg{display:grid;place-items:center;min-height:0}
+.lbimg img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px}
+.lbcap{text-align:center;padding-top:12px;font-size:15px}
+.lbcap .t{font-family:var(--mono);font-size:12px;opacity:.7;margin-right:8px}
+.lbbtn{position:absolute;background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer;display:grid;place-items:center}
+.lbclose{top:calc(env(safe-area-inset-top,0px) + 10px);right:max(12px,env(safe-area-inset-right,0px))}
+.lbprev{left:max(12px,env(safe-area-inset-left,0px));top:50%}
+.lbnext{right:max(12px,env(safe-area-inset-right,0px));top:50%}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:minmax(0,1fr);padding-block:22px 12px}
+  .signwrap{justify-self:stretch;max-width:none}
+  .board{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+  .stage{grid-template-columns:minmax(0,1fr);gap:0}
+  .mapcol{order:-1;top:env(safe-area-inset-top,0px);height:48vh;min-height:300px;z-index:5;background:var(--paper);padding-block:8px;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));gap:6px}
+  .legend{display:none}
+  .dayhead{scroll-margin-top:calc(48vh + 10px);gap:2px 12px}
+  .dayhead .num{font-size:36px;min-width:0}
+  .dayhead p{grid-column:1/-1}
+  .card{scroll-margin-top:calc(48vh + 10px)}
+  .caption{font-size:13px;padding:6px 10px}
+  .chip{padding:4px 10px;font-size:13px;flex:0 0 auto}
+  .play{order:-1;margin-left:0}
+  .toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .toolbar::-webkit-scrollbar{display:none}
+  .inset{width:112px;left:8px;top:8px}
+  .caption{left:8px;bottom:8px;right:52px}
+  .caption .sub{display:none}
+  .hero h1{font-size:clamp(40px,12vw,56px)}
+  .dests b{font-size:24px}
+  .shield{width:70px}
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <div class="kicker">2023.08.22 — 09.12 · New York · New Jersey · Massachusetts</div>
+    <h1><span class="nw">美東</span><span class="nw">二十一日行</span><small>Albany・紐約市・波士頓</small><span class="h1en">Three Weeks on the East Coast, 2023</span></h1>
+    <p class="lead">兩年多後，很多地名都想不起來了。這一頁是靠手機裡 <b>1,418 張照片</b>的拍攝時間和 GPS 拼回來的：照片在哪裡拍、幾點拍，就是地圖上的一個點；點和點之間隔多久、多遠，就看得出是開車、走路還是搭飛機。</p>
+    <p class="lead en">More than two years later, many of the place names were gone. This page rebuilds the trip from the time and GPS stamps in <b>1,418 phone photos</b>. Each photo becomes a point on the map, and the time and distance between points show whether I was driving, walking, or flying.</p>
+  </div>
+  <div class="signwrap" aria-label="8 月 25 日沿 I-87 從 Albany 開到紐約市">
+    <div class="sign"><div class="sign-in">
+      <svg class="shield" viewBox="0 0 100 104" aria-hidden="true">
+        <path d="M8 6c14 4 28 4 42-2 14 6 28 6 42 2 6 30 4 62-42 96C4 68 2 36 8 6z" fill="#fff"/>
+        <path d="M13 12c12 3 25 3 37-2 12 5 25 5 37 2l1 18H12z" fill="#c8102e"/>
+        <path d="M12 34h76c-2 24-12 44-38 61C24 78 14 58 12 34z" fill="#0b3d91"/>
+        <text x="50" y="27" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="12" fill="#fff" letter-spacing="1">INTERSTATE</text>
+        <text x="50" y="78" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="44" fill="#fff">87</text>
+      </svg>
+      <div class="dir">SOUTH</div>
+      <div style="font-size:14px;opacity:.85">NYS Thruway・紐約州高速公路</div>
+      <div class="dests">
+        <div><b>New York City</b><em>240 km</em></div>
+        <div><b>Yonkers</b><em>225 km</em></div>
+      </div>
+    </div></div>
+    <div class="signpost" aria-hidden="true"><i></i><i></i></div>
+    <div class="signfoot">8/25 從 Albany 開進紐約市的那條路；這趟在三個城市之間來回開了五趟長途<br><span class="en">The I-87 drive from Albany into New York City on 8/25, the first of five long drives between three cities</span></div>
+  </div>
+</header>
+
+<section class="board" aria-label="旅程統計">
+  <div><span class="lab">Days</span><span class="val">21</span><span class="zh">天・8/22 出發，9/12 到家</span></div>
+  <div><span class="lab">States</span><span class="val">3</span><span class="zh">紐約・紐澤西・麻州 · NY, NJ, MA</span></div>
+  <div><span class="lab">Distance</span><span class="val" id="sKm">0<small>km</small></span><span class="zh" id="sKmZh"></span></div>
+  <div><span class="lab">Photos</span><span class="val">1,418</span><span class="zh" id="sPh"></span></div>
+</section>
+
+<main class="stage">
+  <div class="log" id="log" aria-label="逐日行程"></div>
+  <div class="mapcol">
+    <div class="toolbar" id="chips" role="group" aria-label="選擇地區"></div>
+    <div class="mapbox">
+      <svg id="map" role="img" aria-label="美東行程地圖"></svg>
+      <div class="inset" aria-hidden="true"><svg id="inset"></svg></div>
+      <div class="caption" id="cap" aria-live="polite"></div>
+      <div class="mapctl">
+        <button id="zin" aria-label="放大">+</button>
+        <button id="zout" aria-label="縮小">−</button>
+        <button id="zall" aria-label="看全部" style="font-size:12px">全</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span><svg viewBox="0 0 26 8"><line x1="1" y1="4" x2="25" y2="4" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>開車 Drive</span>
+      <span><svg viewBox="0 0 26 8"><line x1="2" y1="4" x2="25" y2="4" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="0.1 6"/></svg>步行 Walk</span>
+      <span><svg viewBox="0 0 26 8"><line x1="1" y1="4" x2="25" y2="4" stroke="currentColor" stroke-width="3" stroke-dasharray="2 4"/></svg>渡輪 Ferry</span>
+      <span><svg viewBox="0 0 26 8"><line x1="1" y1="4" x2="25" y2="4" stroke="currentColor" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/></svg>地鐵或公車（直線示意）Transit</span>
+      <span><svg viewBox="0 0 26 8"><line x1="1" y1="4" x2="25" y2="4" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/></svg>飛機 Flight</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>怎麼做的：從 Mac 的「照片」讀出每張照片的拍攝時間、時區和 GPS，依時間串成路線；開車路線是把相鄰兩個地點交給 OpenStreetMap 的路線服務算出來的，不是當時的 GPS 軌跡；紐約市裡搭地鐵或公車的段落只畫直線示意。照片已縮小並移除位置資訊；有其他人入鏡的照片沒有放上來，住處只寫到城鎮，不標位置。</p>
+  <p class="en">How it was made: the time, time zone, and GPS of each photo were read from Apple Photos and joined in order. Driving routes were computed between neighboring stops with an OpenStreetMap routing service, so they are reconstructions, not recorded tracks. Subway and bus rides in New York City are drawn as straight lines. Photos are resized with location data removed. Photos showing other people are left out, and places I stayed are named only by town.</p>
+  <p>地圖資料 Map data © OpenStreetMap contributors (ODbL)；路線 Routing: OSRM；底圖 Base map: Natural Earth, US Census (us-atlas)。有記錯的地方，請用 LINE 告訴 Luke。</p>
+</footer>
+</div>
+
+<dialog id="lb" aria-label="照片">
+  <div class="lbin">
+    <div class="lbimg"><img id="lbimg" alt=""></div>
+    <div class="lbcap" id="lbcap"></div>
+  </div>
+  <button class="lbbtn lbclose" id="lbx" aria-label="關閉">×</button>
+  <button class="lbbtn lbprev" id="lbp" aria-label="上一張">‹</button>
+  <button class="lbbtn lbnext" id="lbn" aria-label="下一張">›</button>
+</dialog>
+
+<script>
+(async function(){
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const el=(tag,attrs={},parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const [data,geo]=await Promise.all([fetch('data.json?v=1').then(r=>r.json()),fetch('geo.json?v=1').then(r=>r.json())]);
+const DAYS=data.days;
+const SEGS=[{zh:'Albany 一帶',en:'Albany, New York',d:'8/22 – 8/24'},{zh:'紐約市',en:'New York City',d:'8/25 – 8/30'},{zh:'波士頓',en:'Boston',d:'8/31 – 9/8'},{zh:'回程',en:'Home',d:'9/9 – 9/12'}];
+const MODE={car:'Drive',subway:'Subway',walk:'Walk',flight:'Flight',intl:'Flight',boat:'Ferry',move:'Transit'};
+const col=day=>`var(--s${DAYS[day].seg})`;
+const fmt=n=>n.toLocaleString('en-US');
+$('#sKm').innerHTML=fmt(data.stats.total_km)+'<small>km</small>';
+$('#sKmZh').textContent=`飛行 Air ${fmt(data.stats.flight_km)}・地面 Ground ${fmt(data.stats.ground_km)}`;
+$('#sPh').textContent=`這頁放了 ${data.stats.shown} 張 · ${data.stats.shown} shown`;
+
+/* ---------- build the log ---------- */
+const log=$('#log');
+const items=[]; // ordered play/scroll items
+const allPhotos=[];
+function legEl(l){
+  const d=document.createElement('div');d.className='leginfo'+(l.mode==='flight'||l.mode==='intl'?' air':'');d.style.setProperty('--c',col(l.day));
+  d.innerHTML=`<span class="mode">${MODE[l.mode]}</span><span>${l.label} <span class="en">${l.en}</span></span><span class="km">${l.mode==='flight'||l.mode==='intl'?'≈ ':''}${fmt(l.km)} km</span>`;
+  return d;
+}
+let lastSeg=-1;
+DAYS.forEach((D,i)=>{
+  if(D.seg!==lastSeg){lastSeg=D.seg;const s=SEGS[D.seg];const h=document.createElement('div');h.className='seghead';h.id='seg'+D.seg;h.style.setProperty('--c',`var(--s${D.seg})`);
+    h.innerHTML=`<b>${s.zh} <span class="en" style="font-family:var(--display);font-size:17px;letter-spacing:.04em">${s.en}</span></b><span>${s.d}</span>`;log.appendChild(h)}
+  const h=document.createElement('div');h.className='dayhead';h.id='day'+(i+1);h.style.setProperty('--c',col(i));h.dataset.day=i;
+  h.innerHTML=`<div class="num">${D.d}</div><h2><span class="dow">DAY ${i+1} · ${D.dow}</span>${D.title}<span class="h2en">${D.en}</span></h2><p>${D.sum}<br><span class="en">${D.sumEn}</span></p>`;
+  log.appendChild(h);items.push({type:'day',day:i,node:h});
+  const addLegs=after=>data.legs.filter(l=>l.day===i&&l.after===after).forEach(l=>{const n=legEl(l);log.appendChild(n);items.push({type:'leg',leg:l,node:n,day:i})});
+  addLegs('start');
+  data.stops.filter(s=>s.day===i).forEach(s=>{
+    const c=document.createElement('article');c.className='card';c.id='s-'+s.id;c.style.setProperty('--c',col(i));c.dataset.id=s.id;
+    const ph=s.photos.map(p=>{allPhotos.push({p,s});const k=allPhotos.length-1;
+      return `<button data-k="${k}" aria-label="看照片：${p.cap}"><img loading="lazy" src="img/${p.id}_s.jpg" alt="${p.cap}" width="${Math.round(104*p.w/p.h)}" height="104">${p.v?'<span class="vid">影片</span>':''}</button>`}).join('');
+    c.innerHTML=`<button class="goto" aria-label="在地圖上看 ${s.zh}"><div class="t">${s.t}</div><h3>${s.zh}<em>${s.sub}</em></h3></button><p>${s.note}</p><p class="en">${s.en}</p>${ph?`<div class="strip">${ph}</div>`:''}`;
+    log.appendChild(c);items.push({type:'stop',stop:s,node:c,day:i});
+    addLegs(s.id);
+  });
+});
+
+/* ---------- map ---------- */
+const svg=$('#map');
+const [fx0,fy0,fx1,fy1]=geo.frame;
+const base=el('g',{},svg);
+el('rect',{x:fx0-30000,y:fy0-30000,width:fx1-fx0+60000,height:fy1-fy0+60000,class:'water'},base);
+el('path',{d:geo.land,class:'land'},base);
+el('path',{d:geo.parks||'',class:'park'},base);
+el('path',{d:geo.water,class:'water'},base);
+const minorP=el('path',{d:geo.minor||'',class:'minor','vector-effect':'non-scaling-stroke'},base);
+el('path',{d:geo.states,class:'states','vector-effect':'non-scaling-stroke'},base);
+el('path',{d:geo.rivers,class:'rivers','vector-effect':'non-scaling-stroke'},base);
+const roadsP=el('path',{d:geo.roads,class:'roads','vector-effect':'non-scaling-stroke'},base);
+el('path',{d:geo.runway,class:'runway','vector-effect':'non-scaling-stroke'},base);
+const labels=el('g',{},svg);
+// [zh, x, y, kind, maxW (show when view narrower), minW (show when view wider)]
+const PL=data.labels;
+const plEls=PL.map(([zh,x,y,kind,maxW,minW])=>{const t=el('text',{x,y,class:'plabel'+(kind?' '+kind:''),'text-anchor':'middle'},labels);t.textContent=zh;t._fs=kind==='sea'?15:kind==='big'?15:13;t._max=maxW;t._min=minW||0;return t});
+const legsG=el('g',{},svg);
+const legEls=data.legs.filter(l=>l.c.length>1).map(l=>{const p=el('polyline',{points:l.c.map(c=>c.join(',')).join(' '),class:`leg ${l.mode}`,stroke:col(l.day),'vector-effect':'non-scaling-stroke'},legsG);p._l=l;return p});
+const stopsG=el('g',{},svg);
+const stopEls={};
+data.stops.filter(s=>s.xy).forEach(s=>{
+  const g=el('g',{class:'stop',tabindex:0,role:'button','aria-label':s.zh},stopsG);
+  const ring=el('circle',{cx:s.xy[0],cy:s.xy[1],r:10,class:'ring',stroke:col(s.day)},g);
+  const dot=el('circle',{cx:s.xy[0],cy:s.xy[1],r:6,class:'dot',fill:col(s.day)},g);
+  const tx=el('text',{x:s.xy[0],y:s.xy[1],class:'slabel'},g);tx.textContent=s.zh;
+  g._s=s;g._ring=ring;g._dot=dot;g._tx=tx;stopEls[s.id]=g;
+  const go=()=>{stopPlay();scrollToNode(document.getElementById('s-'+s.id))};
+  g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+});
+const mover=el('circle',{r:7,class:'mover',fill:'var(--ink)',stroke:'var(--panel)','stroke-width':2.5,opacity:0},svg);
+
+/* view state */
+let vb={x:fx0,y:fy0,w:fx1-fx0,h:fy1-fy0};
+function aspect(){const r=svg.getBoundingClientRect();return r.width>0&&r.height>0?r.width/r.height:1}
+function ppu(){return svg.getBoundingClientRect().width/vb.w}
+function apply(){
+  svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  const pp=ppu();if(!(pp>0)||!isFinite(pp))return;
+  const u=1/pp;
+  for(const id in stopEls){const g=stopEls[id],a=g.classList.contains('active');
+    g._dot.setAttribute('r',(a?8:5)*u);g._ring.setAttribute('r',(a?15:9)*u);
+    g._tx.setAttribute('font-size',14*u);g._tx.setAttribute('x',g._s.xy[0]+12*u);g._tx.setAttribute('y',g._s.xy[1]-10*u);g._tx.style.strokeWidth=4*u;g._dot.style.strokeWidth=2*u;g._ring.style.strokeWidth=2*u}
+  const W=Math.max(vb.w,vb.h);
+  plEls.forEach(t=>{t.setAttribute('font-size',t._fs*u);t.style.strokeWidth=3*u;t.classList.toggle('off',!(W<=t._max&&W>=t._min))});
+  roadsP.style.opacity=W>9000?0:1;minorP.style.opacity=W>400?0:1;
+  mover.setAttribute('r',7*u);mover.setAttribute('stroke-width',2.5*u);
+}
+function fit(x0,y0,x1,y1,pad=0.15){
+  const a=aspect();let w=(x1-x0)*(1+pad*2),h=(y1-y0)*(1+pad*2);
+  w=Math.max(w,24);h=Math.max(h,24);
+  if(w/h>a)h=w/a;else w=h*a;
+  return{x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2,w,h};
+}
+let anim=null;
+function flyTo(t,dur=900){
+  cancelAnimationFrame(anim);
+  if(reduce||dur===0){vb=t;apply();return Promise.resolve()}
+  const s={...vb},t0=performance.now();
+  // zoom out mid-flight when far apart (log scale, so coast-to-coast jumps stay readable)
+  const dist=Math.hypot((t.x+t.w/2)-(s.x+s.w/2),(t.y+t.h/2)-(s.y+s.h/2));
+  const need=Math.max(s.w,t.w,dist*1.3);
+  const bump=Math.max(1,need/Math.max(s.w,t.w));
+  const lw0=Math.log(s.w),lw1=Math.log(t.w);
+  return new Promise(res=>{
+    const step=now=>{let k=Math.min(1,(now-t0)/dur);const e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+      const z=Math.exp(Math.log(bump)*Math.sin(Math.PI*e));
+      const cx=s.x+s.w/2+((t.x+t.w/2)-(s.x+s.w/2))*e, cy=s.y+s.h/2+((t.y+t.h/2)-(s.y+s.h/2))*e;
+      const w=Math.exp(lw0+(lw1-lw0)*e)*z,h=w/(t.w/t.h);
+      vb={x:cx-w/2,y:cy-h/2,w,h};apply();
+      if(k<1)anim=requestAnimationFrame(step);else res()};
+    anim=requestAnimationFrame(step)});
+}
+function boundsOf(pts){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;pts.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)});return[x0,y0,x1,y1]}
+const SPAN={sfo:1600,ord:1600,alb:600,ewr:600,sfo2:1600,hmart:120,cranford:120,lincoln:120,ferry:80,siferry:120,cruise:90,halibut:60,gloucester:60,larz:50,coney:60,mcphs:80,gwb:60,gwb2:60};
+function viewForStop(s){const r=(SPAN[s.id]||60)/2;return fit(s.xy[0]-r,s.xy[1]-r,s.xy[0]+r,s.xy[1]+r,0)}
+function dayPts(i){const p=[];data.legs.filter(l=>l.day===i).forEach(l=>p.push(...l.c));data.stops.filter(s=>s.day===i&&s.xy).forEach(s=>p.push(s.xy));return p}
+function viewForDay(i){const [a,b,c,d]=boundsOf(dayPts(i));return fit(a,b,c,d,0.08)}
+function segPts(g){const p=[];DAYS.forEach((D,i)=>{if(D.seg===g)p.push(...dayPts(i))});return p}
+function viewForSeg(g){const [a,b,c,d]=boundsOf(segPts(g));return fit(a,b,c,d,0.08)}
+function viewAll(){const p=[];DAYS.forEach((D,i)=>p.push(...dayPts(i)));const [a,b,c,d]=boundsOf(p);return fit(a,b,c,d,0.05)}
+
+/* highlight */
+function setDay(i){
+  svg.classList.toggle('dim',i!=null);
+  legEls.forEach(p=>p.classList.toggle('on',i==null||p._l.day===i));
+  Object.values(stopEls).forEach(g=>g.classList.toggle('on',i==null||g._s.day===i));
+  const sg=i==null?null:DAYS[i].seg;
+  chipEls.forEach((c,k)=>c.setAttribute('aria-pressed',String(k===(sg==null?0:sg+1))));
+  insetFor(i);
+}
+function setSeg(g){
+  svg.classList.add('dim');
+  legEls.forEach(p=>p.classList.toggle('on',DAYS[p._l.day].seg===g));
+  Object.values(stopEls).forEach(x=>x.classList.toggle('on',DAYS[x._s.day].seg===g));
+  chipEls.forEach((c,k)=>c.setAttribute('aria-pressed',String(k===g+1)));
+}
+function setActiveStop(id){
+  Object.values(stopEls).forEach(g=>g.classList.toggle('active',g._s.id===id));
+  document.querySelectorAll('.card').forEach(c=>c.classList.toggle('active',c.dataset.id===id));
+  apply();
+}
+const cap=$('#cap');
+function caption(day,t,title,sub){cap.innerHTML=`<div class="t">${day!=null?DAYS[day].d+' '+DAYS[day].dow.split(' · ')[1]+(t?' · '+t:''):t}</div><b>${title}</b>${sub?` <span class="sub" style="color:var(--muted)">${sub}</span>`:''}`}
+const capAll=()=>caption(null,'8/22 — 9/12','二十一天的路線','Scroll to follow the map');
+
+/* chips */
+const chips=$('#chips');
+const chipEls=[];
+[['全部 All',null]].concat(SEGS.map((S,g)=>[S.zh,g])).forEach(([lab,g])=>{
+  const b=document.createElement('button');b.className='chip';b.type='button';b.setAttribute('aria-pressed','false');
+  b.innerHTML=(g!=null?`<i style="background:var(--s${g})"></i>`:'')+lab;
+  b.onclick=()=>{stopPlay();if(g==null){setDay(null);setActiveStop(null);flyTo(viewAll());capAll()}else scrollToNode(document.getElementById('seg'+g))};
+  chips.appendChild(b);chipEls.push(b);
+});
+const playBtn=document.createElement('button');playBtn.className='chip play';playBtn.type='button';
+const PLAY='<svg viewBox="0 0 12 12"><path d="M2 1l9 5-9 5z" fill="currentColor"/></svg>播放旅程 Play',STOP='<svg viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" fill="currentColor"/></svg>停止 Stop';
+playBtn.innerHTML=PLAY;chips.appendChild(playBtn);
+
+/* inset (Taiwan ↔ US across the Pacific) */
+const ins=$('#inset'),ov=data.overview;
+ins.setAttribute('viewBox',ov.vb.join(' '));
+el('rect',{x:ov.vb[0],y:ov.vb[1],width:ov.vb[2],height:ov.vb[3],class:'isea'},ins);
+el('path',{d:ov.land,class:'iland'},ins);
+const toD=p=>'M'+p.map(c=>c.join(',')).join('L');
+const a1=el('path',{d:toD(ov.go),class:'arc'},ins),a2=el('path',{d:toD(ov.back),class:'arc back'},ins);
+a2.setAttribute('transform','translate(0,5)');
+const [tx,ty]=ov.tpe;el('circle',{cx:tx,cy:ty,r:3,class:'city'},ins);
+const t1=el('text',{x:tx+4,y:ty+11},ins);t1.textContent='台北';
+el('rect',{x:ov.us[0][0],y:ov.us[0][1],width:ov.us[1][0]-ov.us[0][0],height:ov.us[1][1]-ov.us[0][1],class:'frame'},ins);
+const t2=el('text',{x:ov.us[0][0]+4,y:ov.us[1][1]+11},ins);t2.textContent='美國本土';
+const plane=el('circle',{r:3.5,fill:'var(--ink)',opacity:0},ins);
+function insetFor(i){a1.style.opacity=(i==null||i===0)?1:.25;a2.style.opacity=(i==null||i===DAYS.length-1)?1:.25}
+
+/* scroll sync */
+let playing=false;
+function refLine(){const narrow=innerWidth<=860;return narrow?($('.mapcol').getBoundingClientRect().bottom+70):innerHeight*0.38}
+let current=null,ticking=false;
+function onScroll(){
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{ticking=false;if(playing)return;
+    const y=refLine();let best=null;
+    for(const it of items){if(it.type==='leg')continue;const r=it.node.getBoundingClientRect();if(r.top<=y)best=it;else break}
+    if(best!==current){current=best;activate(best)}
+  });
+}
+function activate(it){
+  if(!it){setDay(null);setActiveStop(null);flyTo(viewAll());capAll();return}
+  setDay(it.day);
+  if(it.type==='day'){setActiveStop(null);flyTo(viewForDay(it.day));caption(it.day,'',DAYS[it.day].title,DAYS[it.day].en)}
+  else if(it.type==='stop'){const s=it.stop;setActiveStop(s.id);
+    if(s.xy)flyTo(viewForStop(s));else{flyTo(viewAll());flashInset(it.day===0?0:1)}
+    caption(it.day,s.t,s.zh,s.sub)}
+}
+addEventListener('scroll',onScroll,{passive:true});
+addEventListener('resize',()=>{const c=vb.x+vb.w/2,m=vb.y+vb.h/2,a=aspect();const w=Math.max(vb.w,vb.h*a);vb={x:c-w/2,y:m-w/a/2,w,h:w/a};apply()});
+function scrollToNode(n){const top=n.getBoundingClientRect().top+scrollY-(innerWidth<=860?($('.mapcol').offsetHeight+16):innerHeight*0.30);scrollTo({top,behavior:reduce?'auto':'smooth'})}
+document.querySelectorAll('.card .goto').forEach(b=>b.onclick=()=>scrollToNode(b.closest('.card')));
+
+function flashInset(dir){
+  const path=dir===0?a1:a2,L=path.getTotalLength();if(reduce)return Promise.resolve();
+  return new Promise(res=>{const t0=performance.now();plane.setAttribute('opacity',1);
+  const step=now=>{const k=Math.min(1,(now-t0)/1800);const p=path.getPointAtLength(L*k);plane.setAttribute('cx',p.x);plane.setAttribute('cy',p.y+(dir?5:0));if(k<1)requestAnimationFrame(step);else{plane.setAttribute('opacity',0);res()}};
+  requestAnimationFrame(step)});
+}
+
+/* ---------- pan / zoom ---------- */
+const pointers=new Map();let last=null,pinch0=null;
+function toUnits(cx,cy){const r=svg.getBoundingClientRect();return[vb.x+(cx-r.left)/r.width*vb.w,vb.y+(cy-r.top)/r.height*vb.h]}
+function zoomAt(f,cx,cy){const [ux,uy]=toUnits(cx,cy);const w=Math.min(70000,Math.max(12,vb.w*f));const k=w/vb.w;vb={x:ux-(ux-vb.x)*k,y:uy-(uy-vb.y)*k,w,h:vb.h*k};apply()}
+svg.addEventListener('pointerdown',e=>{if(e.target.closest('.stop'))return;stopPlay();cancelAnimationFrame(anim);svg.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);svg.classList.add('dragging');last=[e.clientX,e.clientY];
+  if(pointers.size===2){const [p,q]=[...pointers.values()];pinch0={d:Math.hypot(p[0]-q[0],p[1]-q[1]),w:vb.w}}});
+svg.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pointers.size===2&&pinch0){const [p,q]=[...pointers.values()];const d=Math.hypot(p[0]-q[0],p[1]-q[1]);zoomAt((pinch0.w*pinch0.d/d)/vb.w,(p[0]+q[0])/2,(p[1]+q[1])/2);return}
+  const r=svg.getBoundingClientRect();const dx=(e.clientX-last[0])/r.width*vb.w,dy=(e.clientY-last[1])/r.height*vb.h;vb.x-=dx;vb.y-=dy;last=[e.clientX,e.clientY];apply()});
+const up=e=>{pointers.delete(e.pointerId);if(pointers.size<2)pinch0=null;if(!pointers.size)svg.classList.remove('dragging');else last=[...pointers.values()][0]};
+svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
+svg.addEventListener('wheel',e=>{e.preventDefault();stopPlay();cancelAnimationFrame(anim);zoomAt(Math.exp(e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
+const mid=()=>{const r=svg.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]};
+$('#zin').onclick=()=>{stopPlay();zoomAt(0.55,...mid())};$('#zout').onclick=()=>{stopPlay();zoomAt(1.8,...mid())};
+$('#zall').onclick=()=>{stopPlay();flyTo(viewAll())};
+
+/* ---------- play ---------- */
+let playToken=0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function stopPlay(){if(!playing)return;playing=false;playToken++;playBtn.innerHTML=PLAY;mover.setAttribute('opacity',0)}
+async function moveAlong(l,tok){
+  const pts=l.c;let L=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);L+=d}
+  const [a,b,c,d]=boundsOf(pts);await flyTo(fit(a,b,c,d,0.25),800);if(tok!==playToken)return;
+  const dur=l.mode==='flight'?2600:Math.min(4200,Math.max(1400,Math.sqrt(L)*40));mover.setAttribute('opacity',1);
+  const t0=performance.now();
+  await new Promise(res=>{const step=now=>{if(tok!==playToken)return res();let k=Math.min(1,(now-t0)/dur);let target=L*k,i=0;while(i<seg.length-1&&target>seg[i]){target-=seg[i];i++}
+    const f=seg[i]?target/seg[i]:0;const x=pts[i][0]+(pts[i+1][0]-pts[i][0])*f,y=pts[i][1]+(pts[i+1][1]-pts[i][1])*f;mover.setAttribute('cx',x);mover.setAttribute('cy',y);
+    if(k<1)requestAnimationFrame(step);else res()};requestAnimationFrame(step)});
+  mover.setAttribute('opacity',0);
+}
+async function play(){
+  if(playing){stopPlay();return}
+  playing=true;const tok=++playToken;playBtn.innerHTML=STOP;
+  for(const it of items){
+    if(tok!==playToken)return;
+    setDay(it.day);
+    if(it.type==='day'){setActiveStop(null);caption(it.day,'',DAYS[it.day].title,DAYS[it.day].en);scrollToNode(it.node);await flyTo(viewForDay(it.day),1100);await sleep(800)}
+    else if(it.type==='stop'){const s=it.stop;setActiveStop(s.id);caption(it.day,s.t,s.zh,s.sub);scrollToNode(it.node);
+      if(s.xy)await flyTo(viewForStop(s),900);else{await flyTo(viewAll(),600)}
+      await sleep(1300)}
+    else if(it.type==='leg'){const l=it.leg;caption(it.day,'',l.label,`${l.en} · ${fmt(l.km)} km`);
+      if(l.mode==='intl'){await flyTo(viewAll(),700);await flashInset(it.day===0?0:1);await sleep(300)}
+      else await moveAlong(l,tok)}
+  }
+  if(tok===playToken){stopPlay();setDay(null);setActiveStop(null);caption(null,'9/12','回到台灣','Home in Taiwan');flyTo(viewAll())}
+}
+playBtn.onclick=play;
+
+/* ---------- lightbox ---------- */
+const lb=$('#lb'),lbimg=$('#lbimg'),lbcap=$('#lbcap');let lk=0;
+function show(k){lk=(k+allPhotos.length)%allPhotos.length;const {p,s}=allPhotos[lk];lbimg.src=`img/${p.id}.jpg`;lbimg.alt=p.cap;
+  lbcap.innerHTML=`<span class="t">${DAYS[s.day].d} ${p.t} · ${s.zh} ${s.sub}</span>${p.cap}${p.v?'（影片的一格畫面）':''}<br><span class="en">${p.en}${p.v?' (a frame from a video)':''}</span>`}
+document.querySelectorAll('.strip button').forEach(b=>b.onclick=()=>{show(+b.dataset.k);lb.showModal()});
+$('#lbx').onclick=()=>lb.close();$('#lbp').onclick=()=>show(lk-1);$('#lbn').onclick=()=>show(lk+1);
+lb.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(lk-1);if(e.key==='ArrowRight')show(lk+1)});
+let sx=null;lb.addEventListener('pointerdown',e=>sx=e.clientX);lb.addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx;sx=null;if(Math.abs(dx)>50)show(lk+(dx<0?1:-1))});
+lb.addEventListener('click',e=>{if(e.target===lb||e.target.classList.contains('lbimg'))lb.close()});
+
+/* start */
+vb=viewAll();setDay(null);apply();capAll();
+})();
+</script>
+
+</body>
+</html>
